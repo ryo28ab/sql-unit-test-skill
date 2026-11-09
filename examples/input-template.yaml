@@ -3,7 +3,7 @@ target:
   database: SQL Server
   object_name: null
   object_kind: null
-  scope: retrieval
+  operations: []
 request:
   mode: design
   language: ja
@@ -39,4 +39,7 @@ execution_context:
   dependency_scope: null
   available_identity: null
   clock_control: null
+  identity_control: null
+  transaction_context: null
+  verification_scope: null
   initialization_and_cleanup: null

@@ -1,6 +1,6 @@
 # SQL単体テスト仕様書設計 skill
 
-取得系ストアドプロシージャ・関数の単体テスト仕様書を設計／レビューするskillです。SQL Serverを初期対象とし、仕様・実装SQL・テーブル定義・案件ルールは実行時に渡します。
+ストアドプロシージャ・関数の単体テスト仕様書を設計／レビューするskillです。取得（SELECT）と登録・更新・削除（INSERT／UPDATE／DELETE／MERGE）の両方を扱います。SQL Serverを初期対象とし、仕様・実装SQL・テーブル定義・案件ルールは実行時に渡します。
 
 ## 動作
 
@@ -20,7 +20,7 @@
 | --- | --- |
 | `skills/design-sql-unit-tests/SKILL.md` | AIが読む共通の設計手順 |
 | `skills/design-sql-unit-tests/references/input-contract.md` | 案件情報の入力契約と質問方針 |
-| `skills/design-sql-unit-tests/references/coverage-catalog.md` | 結合・条件・NULL・境界などの観点 |
+| `skills/design-sql-unit-tests/references/coverage-catalog.md` | 共通・取得・登録・更新・削除・MERGE・トランザクションの観点 |
 | `skills/design-sql-unit-tests/references/output-contract.md` | 成果物の構成と書く内容 |
 | `skills/design-sql-unit-tests/agents/openai.yaml` | 対応環境向けの表示・呼び出し情報 |
 | `examples/input-template.yaml` | 後から情報を渡すための空欄付きテンプレート |
@@ -38,7 +38,7 @@ skill機能を持たない環境では、`SKILL.md`と必要な参照ファイ�
 ```text
 $design-sql-unit-tests
 
-次の取得処理の単体テスト仕様書を作ってください。
+次の処理の単体テスト仕様書を作ってください。
 仕様：［文章・添付・参照］
 実装SQL：［貼り付け・添付・参照］
 テーブル定義・依存定義：［貼り付け・添付・参照］
@@ -52,7 +52,7 @@ $design-sql-unit-tests
 ## 出力
 
 - テストケース一覧：観点、事前条件、引数、手順、具体的な期待結果。
-- テストデータと期待結果表：各ケースを独立再現できる行データ。
+- テストデータと期待結果表：各ケースを独立再現できる事前データと、返却値・実行後のテーブル状態・エラー。
 - 網羅性対応表：仕様・SQL観点とケースの関係、採用／統合／対象外／保留。
 - 確認事項：不明点、不一致、影響するケースと確認内容。
 
@@ -74,4 +74,4 @@ git push -u origin main
 
 ## 動作の確認
 
-`evals/scenarios.md`の依頼をそれぞれ独立した会話で試してください。質問が必要な場合の待機、資料が十分な場合の設計開始、仕様と実装の不一致確認を点検します。実案件のレビュー指摘を追記して運用してください。
+`evals/scenarios.md`の依頼をそれぞれ独立した会話で試してください。質問が必要な場合の待機、資料が十分な場合の設計開始、仕様と実装の不一致確認、更新系での変更されない行・エラー時のロールバック確認を点検します。実案件のレビュー指摘を追記して運用してください。

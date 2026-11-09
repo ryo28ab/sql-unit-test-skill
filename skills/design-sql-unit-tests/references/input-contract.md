@@ -6,8 +6,8 @@
 target:
   database: SQL Server # 初期値。別製品なら方言を明示して適用可否を判断する。
   object_name: null
-  object_kind: null # procedure / inline_table_function / multistatement_table_function / scalar_function
-  scope: retrieval
+  object_kind: null # procedure / inline_table_function / multistatement_table_function / scalar_function / trigger
+  operations: [] # select / insert / update / delete / merge。実装から分かれば空でよい。
 request:
   mode: design # scaffold / design / review
   language: ja
@@ -29,6 +29,9 @@ execution_context:
   dependency_scope: null # 単体の境界
   available_identity: null # 実行ユーザー依存がある場合のみ
   clock_control: null # 現在時刻依存がある場合のみ
+  identity_control: null # IDENTITY・SEQUENCEの初期化方法。採番がある場合のみ
+  transaction_context: null # 呼び出し側トランザクションの有無。契約がある場合のみ
+  verification_scope: null # 実行後に確認するテーブル・列、比較から外す列
   initialization_and_cleanup: null
 ```
 
@@ -36,18 +39,18 @@ execution_context:
 
 | 情報 | 確認する内容 | 不足時の対応 |
 |---|---|---|
-| 仕様 | 入出力、業務条件、0件・NULL・エラー・順序・重複の契約 | 必要な契約を質問し、依存する期待結果の作成は回答まで待つ |
+| 仕様 | 入出力、業務条件、0件・NULL・エラー・順序・重複の契約。更新系は対象行、設定値、変更しない範囲、エラー時のロールバック範囲 | 必要な契約を質問し、依存する期待結果の作成は回答まで待つ |
 | 実装 | 対象全体の定義、引数・型・既定値、依存先 | 完全な定義を質問する。仕様ベースだけで進める指定があれば範囲を明記する |
-| DDL | 型・長さ・精度、NULL、PK・FK・UNIQUE・CHECK・既定値 | 必要な定義を質問し、該当データと境界値の作成は回答まで待つ |
+| DDL | 型・長さ・精度、NULL、PK・FK（ON DELETE等）・UNIQUE・CHECK・既定値、IDENTITY、トリガー | 必要な定義を質問し、該当データと境界値の作成は回答まで待つ |
 | 案件ルール | 網羅基準、単体の境界、対象外基準 | 合否・範囲に影響する部分は質問する。指定なしと分かれば標準方針を明記する |
 | ひな形・承認済み例 | 列構成、粒度、データと証跡の示し方 | 標準の出力契約を使う |
 | 過去の指摘 | 繰り返す指摘とその適用範囲 | 共通観点だけで設計する |
-| 依存定義・環境 | ビュー・関数・権限・時刻等の振る舞い | 関連する定義・境界を質問し、依存する設計は回答まで待つ |
+| 依存定義・環境 | ビュー・関数・別ストアド・トリガー・権限・時刻等の振る舞いと副作用 | 関連する定義・境界を質問し、依存する設計は回答まで待つ |
 
 ## 後から渡すための依頼文
 
 ```text
-このskillで次の取得処理の単体テスト仕様書を作ってください。
+このskillで次の処理の単体テスト仕様書を作ってください。
 対象：［オブジェクト名・種別］
 仕様：［貼り付け／添付／参照］
 実装：［貼り付け／添付／参照］
@@ -65,5 +68,11 @@ execution_context:
 受領済みの情報を一文で示し、未提供のうち今回の設計に必要なものを質問せよ。例えば仕様がなく実装・DDLがある場合は、次のように聞け。
 
 > 実装SQLとテーブル定義は確認できました。期待結果を決めるため、取得対象・除外条件・返却内容の仕様を教えてください。正式な仕様書がなければ、文章での説明で構いません。
+
+更新系で仕様がない場合の例：
+
+> 実装SQLとテーブル定義は確認できました。期待結果を決めるため、次の2点を教えてください。
+> 1. 更新対象となる行の条件と、各列に設定すべき値（正式な仕様書がなければ文章で構いません）。
+> 2. エラーになる条件と、そのときに変更を残すか戻すか。
 
 質問の末尾に未承認の仮定によるケース一覧を続けるな。資料が用意できない場合は、次の回答で許容する設計範囲を確認せよ。

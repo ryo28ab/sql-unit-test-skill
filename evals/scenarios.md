@@ -44,3 +44,45 @@ DDL：CREATE TABLE Orders(OrderId int NOT NULL PRIMARY KEY, UserId int NOT NULL,
 - 不一致を直接質問し、どちらが今回の採用仕様かを確認する。
 - 実装を自動的に正解にしない。
 - 回答に依存するケースの期待結果を、回答前に確定しない。
+
+## 4. 更新処理の資料が揃っている
+
+### 依頼
+
+SQL Serverのdbo.CompleteOrdersのテスト仕様書を会話内で作ってください。
+仕様：@UserId intで指定したユーザーのPending注文をすべてDoneにし、CompletedAtに実行時刻を設定する。他ユーザーの注文とDone済みの注文は変更しない。更新件数を戻り値で返す。対象なしは0を返しエラーなし。
+実装：CREATE PROCEDURE dbo.CompleteOrders @UserId int AS BEGIN SET NOCOUNT ON; UPDATE Orders SET Status='Done', CompletedAt=SYSDATETIME() WHERE UserId=@UserId AND Status='Pending'; RETURN @@ROWCOUNT; END
+DDL：CREATE TABLE Orders(OrderId int NOT NULL PRIMARY KEY, UserId int NOT NULL, Status varchar(10) NOT NULL CHECK(Status IN ('Done','Pending')), CompletedAt datetime2(7) NULL)。トリガーなし。
+単体の境界はこのストアドとOrders実表。各ケースは隔離DBの空テーブルから開始。ほかの依存、案件独自ルール、ひな形はありません。DB実行とファイル作成は不要です。
+
+### 確認
+
+- 回答済みの情報を再質問せず、設計を開始する。
+- 同じケース内に、更新される行（対象ユーザーのPending）と更新されない行（他ユーザーのPending、対象ユーザーのDone）を置く。
+- 期待結果に実行後のOrdersの状態を、更新されない行の値を含めて具体的に示す。
+- CompletedAtを固定値で決め打ちせず、実行前後の時刻の範囲など確認方法を示す。
+- 戻り値（更新件数）を0／1／複数件で確認する。
+
+## 5. 削除処理で副作用の定義が不足している
+
+### 依頼
+
+SQL Serverのdbo.DeleteCustomerのテスト仕様書を作ってください。仕様：@CustomerIdの顧客を削除する。実装：DELETE FROM Customers WHERE CustomerId=@CustomerId。CustomersのDDLは添付のとおりで、Ordersテーブルから外部キーで参照されています。OrdersのDDLとトリガーの有無はまだ渡していません。
+
+### 確認
+
+- 参照されている顧客を削除した場合の扱い（FK違反のエラー／カスケード削除）を決めるため、OrdersのDDLとトリガーの有無を質問する。
+- 子テーブルの動作を推測して、期待結果を確定しない。
+- 質問は理由付きで3問以内にまとめる。
+
+## 6. 複数テーブル更新の途中失敗
+
+### 依頼
+
+ヘッダーと明細を1トランザクションで登録するストアドの資料（仕様・実装・DDL）を渡したうえで、テスト仕様書を作ってください。仕様には「明細の登録に失敗した場合はヘッダーも登録しない」とあり、実装はTRY／CATCHでROLLBACKしています。
+
+### 確認
+
+- 明細の登録で失敗させるケースを作り、ヘッダーも残らないことを実行後の状態で確認する。
+- 失敗を起こす手段に、制約の無効化を使わない（処理側から制約違反を発生させる）。
+- エラーの内容と、トランザクションが残っていないこと（@@TRANCOUNT）の確認方法を示す。
