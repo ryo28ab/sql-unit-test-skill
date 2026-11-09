@@ -1,0 +1,14 @@
+interface:
+  display_name: "SQL単体テスト仕様書設計"
+  short_description: "仕様・SQL・DDLの不足を確認してから、取得系の観点・データ・期待結果を設計"
+  default_prompt: "$design-sql-unit-tests を使い、渡した仕様・実装SQL・DDLを確認し、不足情報があれば先に質問してから単体テスト仕様書を作成してください。"
+  icon_small: "assets/icon.svg"
+  icon_large: "assets/icon.svg"
+
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

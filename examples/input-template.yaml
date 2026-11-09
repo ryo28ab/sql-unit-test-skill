@@ -1,0 +1,42 @@
+# 空欄は未提供を表す。YAML利用は任意。
+target:
+  database: SQL Server
+  object_name: null
+  object_kind: null
+  scope: retrieval
+request:
+  mode: design
+  language: ja
+  output_format: null
+  requested_sql: []
+sources:
+  - id: SPEC-01
+    role: specification
+    location: null
+    content: null
+  - id: SQL-01
+    role: implementation
+    location: null
+    content: null
+  - id: DDL-01
+    role: schema
+    location: null
+    content: null
+  - id: RULE-01
+    role: project_rules
+    location: null
+    content: null
+  - id: TEMPLATE-01
+    role: output_template
+    location: null
+    content: null
+  - id: REVIEW-01
+    role: review_feedback
+    location: null
+    content: null
+execution_context:
+  fixture_strategy: null
+  dependency_scope: null
+  available_identity: null
+  clock_control: null
+  initialization_and_cleanup: null
