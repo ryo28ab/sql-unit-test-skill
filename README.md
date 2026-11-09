@@ -23,6 +23,7 @@
 | `skills/design-sql-unit-tests/references/coverage-catalog.md` | 共通・取得・登録・更新・削除・MERGE・トランザクションの観点 |
 | `skills/design-sql-unit-tests/references/output-contract.md` | 成果物の構成と書く内容 |
 | `skills/design-sql-unit-tests/agents/openai.yaml` | 対応環境向けの表示・呼び出し情報 |
+| `prompt/sql-unit-test-prompt.md` | skillを使えない環境向けの単独プロンプト版 |
 | `examples/input-template.yaml` | 後から情報を渡すための空欄付きテンプレート |
 | `examples/request.md` | 依頼文の例 |
 | `evals/scenarios.md` | 質問・設計の挙動を確認するシナリオ |
@@ -32,6 +33,19 @@
 `skills/design-sql-unit-tests/` のディレクトリ一式を、利用するAI環境のskill配置先へコピーしてください。`SKILL.md`と`references/`の相対位置を維持します。具体的な導入先や有効化方法は利用環境に合わせてください。
 
 skill機能を持たない環境では、`SKILL.md`と必要な参照ファイルをAIへ渡して同じ手順を指示できます。YAMLを処理するプログラムは含みません。入力を解釈し、質問・設計するのはAIです。
+
+## skillを使えない場合（単独プロンプト版）
+
+ブラウザのチャットなど、skill機能を使えない環境では [`prompt/sql-unit-test-prompt.md`](prompt/sql-unit-test-prompt.md) を使います。skill本体と参照ファイルの内容を1ファイルにまとめたものです。
+
+1. GitHub上でファイルを開き、「Raw」表示または右上のコピーボタンで全文をコピーする。
+2. 新しいチャットの最初のメッセージとして貼り付けて送信する。
+3. AIが必要な資料を案内するので、仕様・実装SQL・DDLなどを送る。
+4. 不足や矛盾があれば先に質問が返ってくるので回答する。揃った時点でテスト仕様書が作成される。
+
+資料をプロンプトの後ろに続けて、1通目でまとめて送っても構いません。チャット環境の会話が長くなると、最初の指示が守られにくくなることがあります。対象ごとに新しいチャットで始めてください。
+
+skill版を変更したときは、プロンプト版にも同じ変更を反映してください。
 
 ## 使い方
 
